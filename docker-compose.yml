@@ -1,0 +1,36 @@
+version: '3.5'
+services:
+  ProductOwner.Microservice:
+   image: ${DOCKER_REGISTRY-}ownerservice:v1
+   build:
+    context: ./ProductOwner.Microservice
+    dockerfile: DockerFile
+   environment:
+    - ASPNETCORE_ENVIRONMENT=Production
+    - CONNECTIONSTRINGS__DEFAULTCONNECTION=Data Source=localhost,1433;Initial Catalog=ProductOwnerServiceDB
+    - RABBIT_MQ_SERVER=192.168.1.1
+    - RABBIT_MQ_USERNAME=guest
+    - RABBIT_MQ_PASSWORD=guest
+    - RABBITMQSETTINGS__EXCHANGENAME=OfferExchange
+    - RABBITMQSETTINGS__EXCHHANGETYPE=direct
+    - RABBITMQSETTINGS__QUEUENAME=offer_queue
+    - RABBITMQSETTINGS__ROUTEKEY=offer_route
+   ports:
+    - "4201:80"
+  ProductUser.Microservice:
+   image: ${DOCKER_REGISTRY-}userservice:v1
+   build:
+    context: ./ProductUser.Microservice
+    dockerfile: DockerFile
+   environment:
+    - ASPNETCORE_ENVIRONMENT=Production
+    - CONNECTIONSTRINGS__DEFAULTCONNECTION=Data Source=localhost,1433;Initial Catalog=ProductUserServiceDB
+    - RABBIT_MQ_SERVER=192.168.1.1
+    - RABBIT_MQ_USERNAME=guest
+    - RABBIT_MQ_PASSWORD=guest
+    - RABBITMQSETTINGS__EXCHANGENAME=OfferExchange
+    - RABBITMQSETTINGS__EXCHHANGETYPE=direct
+    - RABBITMQSETTINGS__QUEUENAME=offer_queue
+    - RABBITMQSETTINGS__ROUTEKEY=offer_route
+   ports:
+    - "4202:80"
